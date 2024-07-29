@@ -1,8 +1,7 @@
-
 export default function Expense() {
   return (
     <div>
-      <button className="btn">Button</button>
+      WELCOMR TO MAIN PAGE
     </div>
   );
 }
