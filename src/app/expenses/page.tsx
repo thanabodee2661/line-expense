@@ -76,12 +76,12 @@ export default function Expenses() {
     },
   ];
 
-  useEffect(() => {
+  // useEffect(() => {
     liffObject?.getProfile()
     .then((pf) => {
       setProfile(pf);
     });
-  })
+  // })
 
   const current = new Date();
   const initFormDetail: ExpenseDetail = {

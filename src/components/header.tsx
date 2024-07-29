@@ -8,12 +8,12 @@ export default function Header() {
   const liffObject = useContext(LiffContext);
   const [profile, setProfile] = useState<Profile>();
 
-  useEffect(() => {
+  // useEffect(() => {
     liffObject?.getProfile()
     .then((pf) => {
       setProfile(pf);
     });
-  })
+  // })
 
   return (
     <div className="navbar bg-base-100">
