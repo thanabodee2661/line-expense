@@ -3,7 +3,7 @@
 import Header from "@/components/header";
 import { useEffect, useState } from "react";
 import liff, { Liff } from "@line/liff";
-import LiffContext from "@/contexts/line";
+import ProfileContext from "@/contexts/line";
 import { Profile } from "@liff/get-profile";
 
 function ClientLayout({
@@ -13,7 +13,7 @@ function ClientLayout({
 }>) {
   const [liffObject, setLiffObject] = useState<Liff | null>(null);
   const [liffError, setLiffError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<Profile>();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   // useEffect(() => {
     liff
@@ -36,12 +36,12 @@ function ClientLayout({
   // }, []);
 
   return (
-    <LiffContext.Provider value={liffObject}>
+    <ProfileContext.Provider value={profile}>
       <Header></Header>
       <div className="flex px-6 mb-4">
         {children}
       </div>
-    </LiffContext.Provider>
+    </ProfileContext.Provider>
   );
 }
 

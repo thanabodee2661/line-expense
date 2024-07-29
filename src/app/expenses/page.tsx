@@ -15,12 +15,13 @@ import { IsEmpty } from "@/utils/validation";
 import axios from 'axios';
 import { Profile } from "@liff/get-profile";
 import LiffContext from "@/contexts/line";
+import ProfileContext from "@/contexts/line";
 
 const MySwal = withReactContent(Swal);
 
 export default function Expenses() {
-  const liffObject = useContext(LiffContext);
-  const [profile, setProfile] = useState<Profile>();
+  const profile = useContext(ProfileContext);
+  // const [profile, setProfile] = useState<Profile>();
   const typeList: ExpenseType[] = [
     {
       id: "รับ",
@@ -77,10 +78,10 @@ export default function Expenses() {
   ];
 
   // useEffect(() => {
-    liffObject?.getProfile()
-    .then((pf) => {
-      setProfile(pf);
-    });
+    // liffObject?.getProfile()
+    // .then((pf) => {
+    //   setProfile(pf);
+    // });
   // })
 
   const current = new Date();

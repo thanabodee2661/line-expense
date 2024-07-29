@@ -2,17 +2,17 @@
 
 import { useState, useContext, useEffect } from "react";
 import { Profile } from "@liff/get-profile";
-import LiffContext from "@/contexts/line";
+import ProfileContext from "@/contexts/line";
 
 export default function Header() {
-  const liffObject = useContext(LiffContext);
-  const [profile, setProfile] = useState<Profile>();
+  const profile = useContext(ProfileContext);
+  // const [profile, setProfile] = useState<Profile>();
 
   // useEffect(() => {
-    liffObject?.getProfile()
-    .then((pf) => {
-      setProfile(pf);
-    });
+    // liffObject?.getProfile()
+    // .then((pf) => {
+    //   setProfile(pf);
+    // });
   // })
 
   return (
