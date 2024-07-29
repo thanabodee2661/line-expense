@@ -101,6 +101,10 @@ export default function Expenses() {
   };
   const [formDetail, setFormDetail] = useState(initFormDetail);
 
+  useEffect(() => {
+    setFormDetail(initFormDetail)
+  }, [profile]);
+
   const handleSubDetailChange = (
     index: number,
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
