@@ -14,6 +14,7 @@ import withReactContent from "sweetalert2-react-content";
 import { IsEmpty } from "@/utils/validation";
 import axios from "axios";
 import ProfileContext from "@/contexts/line";
+import Loading from "../loading";
 
 const MySwal = withReactContent(Swal);
 
@@ -92,6 +93,7 @@ export default function Expenses() {
     ],
   };
   const [formDetail, setFormDetail] = useState(initFormDetail);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setFormDetail(initFormDetail);
@@ -132,6 +134,7 @@ export default function Expenses() {
   };
 
   const save = () => {
+    setIsLoading(true)
     const errMsg = validate();
     const Toast = MySwal.mixin({
       toast: true,
@@ -161,13 +164,16 @@ export default function Expenses() {
 
           setFormDetail(initFormDetail);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally((() => setIsLoading(false)));
     } else {
       Toast.fire({
         icon: "error",
         title: errMsg,
         timer: 4000,
       });
+
+      setIsLoading(false)
     }
   };
 
@@ -196,6 +202,8 @@ export default function Expenses() {
 
     return "";
   };
+
+  if (isLoading) <Loading />
 
   return (
     <div className="w-full">

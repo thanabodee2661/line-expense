@@ -15,8 +15,6 @@ function ClientLayout({
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    console.log("use effect");
-
     liff
       .init({ liffId: "2005736477-2eRaENlj" })
       .then(() => {
@@ -25,12 +23,8 @@ function ClientLayout({
         }
 
         liff.getProfile().then((pf) => {
-          console.log("get profile:", pf);
-
           setProfile(pf);
         });
-
-        console.log("profile: ", profile);
       })
       .catch((error) => {
         console.log(`liff.init() failed: ${error}`);
