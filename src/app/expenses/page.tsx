@@ -7,14 +7,13 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { ExpenseDetail, ExpenseType } from "@/models/expense";
-import { ChangeEvent, Suspense, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { IsEmpty } from "@/utils/validation";
 import axios from "axios";
 import ProfileContext from "@/contexts/line";
-import Loading from "../loading";
 
 const MySwal = withReactContent(Swal);
 
@@ -199,142 +198,140 @@ export default function Expenses() {
   };
 
   return (
-    <Suspense fallback={<Loading />}>
-      <div className="w-full">
-        <div className="relative z-30">
-          <div className="fixed bottom-20 right-5">
-            <button
-              className="btn btn-accent rounded-full"
-              onClick={addSubDetail}
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </button>
-          </div>
-          <div className="fixed bottom-5 right-5">
-            <button className="btn btn-primary rounded-full" onClick={save}>
-              <FontAwesomeIcon icon={faFloppyDisk} />
-            </button>
-          </div>
-        </div>
-
-        <div className="sticky top-0 w-full backdrop-blur z-10">
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">วันที่</span>
-            </div>
-            <input
-              type="date"
-              placeholder="วันที่"
-              defaultValue={formDetail.date}
-              onChange={(e) =>
-                setFormDetail({ ...formDetail, date: e.target.value })
-              }
-              className="input input-bordered w-full"
-            />
-          </label>
-          <label className="form-control">
-            <div className="label">
-              <span className="label-text">ประเภท</span>
-            </div>
-            <select
-              className="select select-bordered"
-              defaultValue={formDetail.type}
-              onChange={(e) =>
-                setFormDetail({ ...formDetail, type: e.target.value })
-              }
-            >
-              {typeList.map((a, i) => (
-                <option key={`type${i}`} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        {formDetail.subDetailList.map((sd, index) => (
-          <div
-            key={`subDetailList${index}`}
-            className="relative overscroll-contain w-full"
+    <div className="w-full">
+      <div className="relative z-30">
+        <div className="fixed bottom-20 right-5">
+          <button
+            className="btn btn-accent rounded-full"
+            onClick={addSubDetail}
           >
-            <details className="collapse bg-base-200 mt-4" open>
-              <summary className="collapse-title text-xl font-medium pe-4">
-                รายการที่ {index + 1}
-                <button
-                  className={`float-end z-20 ${
-                    formDetail.subDetailList.length === 1 ? "hidden" : ""
-                  }`}
-                  onClick={() => removeSubDetail(index)}
-                >
-                  <FontAwesomeIcon icon={faXmark} />
-                </button>
-              </summary>
-              <div className="collapse-content">
-                <label className="form-control">
-                  <div className="label">
-                    <span className="label-text">หมวดหมู่</span>
-                  </div>
-                  <select
-                    className="select select-bordered"
-                    name="category"
-                    value={sd.category}
-                    onChange={(e) => handleSubDetailChange(index, e)}
-                  >
-                    {categoryList.map((a, i) => (
-                      <option key={`cat${i}`} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="form-control">
-                  <div className="label">
-                    <span className="label-text">รายละเอียด</span>
-                  </div>
-                  <input
-                    type="text"
-                    name="description"
-                    placeholder="รายละเอียด"
-                    value={sd.description}
-                    onChange={(e) => handleSubDetailChange(index, e)}
-                    className="input input-bordered w-full"
-                  />
-                </label>
-                <label className="form-control">
-                  <div className="label">
-                    <span className="label-text">จำนวนเงิน</span>
-                  </div>
-                  <input
-                    type="number"
-                    name="amount"
-                    placeholder="จำนวนเงิน"
-                    value={sd.amount}
-                    onChange={(e) => handleSubDetailChange(index, e)}
-                    className="input input-bordered w-full"
-                  />
-                </label>
-                <label className="form-control">
-                  <div className="label">
-                    <span className="label-text">ช่องทางชำระเงิน</span>
-                  </div>
-                  <select
-                    className="select select-bordered"
-                    name="channel"
-                    value={sd.channel}
-                    onChange={(e) => handleSubDetailChange(index, e)}
-                  >
-                    {channelList.map((a, i) => (
-                      <option key={`ch${i}`} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </details>
-          </div>
-        ))}
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
+        </div>
+        <div className="fixed bottom-5 right-5">
+          <button className="btn btn-primary rounded-full" onClick={save}>
+            <FontAwesomeIcon icon={faFloppyDisk} />
+          </button>
+        </div>
       </div>
-    </Suspense>
+
+      <div className="sticky top-0 w-full backdrop-blur z-10">
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">วันที่</span>
+          </div>
+          <input
+            type="date"
+            placeholder="วันที่"
+            defaultValue={formDetail.date}
+            onChange={(e) =>
+              setFormDetail({ ...formDetail, date: e.target.value })
+            }
+            className="input input-bordered w-full"
+          />
+        </label>
+        <label className="form-control">
+          <div className="label">
+            <span className="label-text">ประเภท</span>
+          </div>
+          <select
+            className="select select-bordered"
+            defaultValue={formDetail.type}
+            onChange={(e) =>
+              setFormDetail({ ...formDetail, type: e.target.value })
+            }
+          >
+            {typeList.map((a, i) => (
+              <option key={`type${i}`} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {formDetail.subDetailList.map((sd, index) => (
+        <div
+          key={`subDetailList${index}`}
+          className="relative overscroll-contain w-full"
+        >
+          <details className="collapse bg-base-200 mt-4" open>
+            <summary className="collapse-title text-xl font-medium pe-4">
+              รายการที่ {index + 1}
+              <button
+                className={`float-end z-20 ${
+                  formDetail.subDetailList.length === 1 ? "hidden" : ""
+                }`}
+                onClick={() => removeSubDetail(index)}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </summary>
+            <div className="collapse-content">
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">หมวดหมู่</span>
+                </div>
+                <select
+                  className="select select-bordered"
+                  name="category"
+                  value={sd.category}
+                  onChange={(e) => handleSubDetailChange(index, e)}
+                >
+                  {categoryList.map((a, i) => (
+                    <option key={`cat${i}`} value={a.id}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">รายละเอียด</span>
+                </div>
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="รายละเอียด"
+                  value={sd.description}
+                  onChange={(e) => handleSubDetailChange(index, e)}
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">จำนวนเงิน</span>
+                </div>
+                <input
+                  type="number"
+                  name="amount"
+                  placeholder="จำนวนเงิน"
+                  value={sd.amount}
+                  onChange={(e) => handleSubDetailChange(index, e)}
+                  className="input input-bordered w-full"
+                />
+              </label>
+              <label className="form-control">
+                <div className="label">
+                  <span className="label-text">ช่องทางชำระเงิน</span>
+                </div>
+                <select
+                  className="select select-bordered"
+                  name="channel"
+                  value={sd.channel}
+                  onChange={(e) => handleSubDetailChange(index, e)}
+                >
+                  {channelList.map((a, i) => (
+                    <option key={`ch${i}`} value={a.id}>
+                      {a.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </details>
+        </div>
+      ))}
+    </div>
   );
 }

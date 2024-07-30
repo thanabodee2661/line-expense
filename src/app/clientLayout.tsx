@@ -12,8 +12,6 @@ function ClientLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [liffObject, setLiffObject] = useState<Liff | null>(null);
-  const [liffError, setLiffError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
@@ -25,9 +23,6 @@ function ClientLayout({
         if (!liff.isLoggedIn()) {
           liff.login();
         }
-        setLiffObject(liff);
-
-        console.log("init profile: ", liffObject);
 
         liff.getProfile().then((pf) => {
           console.log("get profile:", pf);
@@ -39,17 +34,18 @@ function ClientLayout({
       })
       .catch((error) => {
         console.log(`liff.init() failed: ${error}`);
-        setLiffError(error.toString());
       });
   }, []);
 
+  if (!profile) return <Loading />;
+
   return (
-    <Suspense fallback={<Loading />}>
-      <ProfileContext.Provider value={profile}>
+    <ProfileContext.Provider value={profile}>
+      <Suspense fallback={<Loading />}>
         <Header></Header>
         <div className="flex px-6 mb-4">{children}</div>
-      </ProfileContext.Provider>
-    </Suspense>
+      </Suspense>
+    </ProfileContext.Provider>
   );
 }
 
