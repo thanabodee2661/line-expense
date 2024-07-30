@@ -15,6 +15,7 @@ import { IsEmpty } from "@/utils/validation";
 import axios from "axios";
 import ProfileContext from "@/contexts/line";
 import Loading from "../loading";
+import { log } from "console";
 
 const MySwal = withReactContent(Swal);
 
@@ -93,7 +94,6 @@ export default function Expenses() {
     ],
   };
   const [formDetail, setFormDetail] = useState(initFormDetail);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setFormDetail(initFormDetail);
@@ -134,13 +134,20 @@ export default function Expenses() {
   };
 
   const save = () => {
-    setIsLoading(true)
-    const errMsg = validate();
     const Toast = MySwal.mixin({
       toast: true,
       position: "top",
       showConfirmButton: false,
+      title: "กำลังดำเนินการ.. กรุณารอสักครู่",
+      didOpen: () => {
+        console.log('show loading');
+        MySwal.showLoading();
+      }
     });
+
+    Toast.fire()
+
+    const errMsg = validate();
 
     if (IsEmpty(errMsg)) {
       axios
@@ -155,26 +162,48 @@ export default function Expenses() {
           }
         )
         .then((res) => {
-          console.log(res);
           Toast.fire({
             icon: "success",
             title: "บันทึกสำเร็จ",
             timer: 1500,
+            didOpen: () => {
+              MySwal.hideLoading();
+            },
           });
 
           setFormDetail(initFormDetail);
         })
-        .catch((err) => console.log(err))
-        .finally((() => setIsLoading(false)));
+        .catch((err) => console.log(err));
     } else {
       Toast.fire({
         icon: "error",
         title: errMsg,
         timer: 4000,
+        didOpen: () => {
+          MySwal.hideLoading();
+        },
       });
-
-      setIsLoading(false)
     }
+  };
+
+  const loading = () => {
+    console.log("loading");
+
+    const Toast = MySwal.mixin({
+      toast: true,
+      position: "top",
+      showConfirmButton: false,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+      title: "กำลังดำเนินการ.. กรุณารอสักครู่",
+      didOpen: () => {
+        console.log('show loading');
+        
+        Swal.showLoading();
+      },
+    });
+
+    Toast.fire().then(() => {});
   };
 
   const validate = () => {
@@ -202,8 +231,6 @@ export default function Expenses() {
 
     return "";
   };
-
-  if (isLoading) <Loading />
 
   return (
     <div className="w-full">
