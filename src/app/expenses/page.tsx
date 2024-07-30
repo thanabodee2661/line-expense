@@ -195,9 +195,9 @@ export default function Expenses() {
   };
 
   const validate = () => {
-    // if (IsEmpty(formDetail.userId)) {
-    //   return "ไม่สามารถ init profile ได้";
-    // }
+    if (IsEmpty(formDetail.userId)) {
+      return "ไม่สามารถ init profile ได้";
+    }
 
     if (IsEmpty(formDetail.date)) {
       return "กรุณากรอกวันที่";
