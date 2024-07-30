@@ -15,7 +15,7 @@ function ClientLayout({
   const [liffError, setLiffError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
 
-  // useEffect(() => {
+  useEffect(() => {
     liff
       .init({ liffId: "2005736477-2eRaENlj" })
       .then(() => {
@@ -33,7 +33,7 @@ function ClientLayout({
         console.log(`liff.init() failed: ${error}`);
         setLiffError(error.toString());
       });
-  // }, []);
+  }, []);
 
   return (
     <ProfileContext.Provider value={profile}>
