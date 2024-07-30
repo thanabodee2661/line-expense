@@ -7,13 +7,14 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { ExpenseDetail, ExpenseType } from "@/models/expense";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, Suspense, useContext, useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { IsEmpty } from "@/utils/validation";
-import axios from 'axios';
+import axios from "axios";
 import ProfileContext from "@/contexts/line";
+import Loading from "../loading";
 
 const MySwal = withReactContent(Swal);
 
@@ -76,9 +77,11 @@ export default function Expenses() {
 
   const current = new Date();
   const initFormDetail: ExpenseDetail = {
-    userId: profile?.userId || '',
-    userName: profile?.displayName || '',
-    date: `${current.getFullYear()}-${("0" + current.getMonth()).slice(-2)}-${("0" + current.getDate()).slice(-2)}`,
+    userId: profile?.userId || "",
+    userName: profile?.displayName || "",
+    date: `${current.getFullYear()}-${("0" + current.getMonth()).slice(-2)}-${(
+      "0" + current.getDate()
+    ).slice(-2)}`,
     type: `รับ`,
     subDetailList: [
       {
@@ -92,7 +95,7 @@ export default function Expenses() {
   const [formDetail, setFormDetail] = useState(initFormDetail);
 
   useEffect(() => {
-    setFormDetail(initFormDetail)
+    setFormDetail(initFormDetail);
   }, [profile]);
 
   const handleSubDetailChange = (
@@ -115,20 +118,22 @@ export default function Expenses() {
         channel: "",
       },
     ];
-    setFormDetail(prevFormDetail => {
-      return {...prevFormDetail, subDetailList: newSubDetailList, }
+    setFormDetail((prevFormDetail) => {
+      return { ...prevFormDetail, subDetailList: newSubDetailList };
     });
   };
 
   const removeSubDetail = (index: number) => {
-    setFormDetail(prevFormDetail => {
-      const newSubDetailList = prevFormDetail.subDetailList.filter((_, i) => i !== index);
+    setFormDetail((prevFormDetail) => {
+      const newSubDetailList = prevFormDetail.subDetailList.filter(
+        (_, i) => i !== index
+      );
       return { ...prevFormDetail, subDetailList: newSubDetailList };
     });
   };
 
   const save = () => {
-    const errMsg = validate()
+    const errMsg = validate();
     const Toast = MySwal.mixin({
       toast: true,
       position: "top",
@@ -136,185 +141,200 @@ export default function Expenses() {
     });
 
     if (IsEmpty(errMsg)) {
-      axios.post('https://script.google.com/macros/s/AKfycbwvcrnyUjHtgllggRwT6eIyzvuEmBgpJKh2xeqDjcIKgVAJh1Ge2HxEifhCBr7bMKLG/exec', formDetail, { headers: {'Content-Type': 'text/plain;charset=utf-8;', 'Accept': 'text/plain;charset=utf-8;'}})
-      .then(res => {
-        console.log(res);
-        Toast.fire({
-          icon: "success",
-          title: "บันทึกสำเร็จ",
-          timer: 1500,
-        });
-  
-        setFormDetail(initFormDetail)
-      })
-      .catch(err => console.log(err))
+      axios
+        .post(
+          "https://script.google.com/macros/s/AKfycbwvcrnyUjHtgllggRwT6eIyzvuEmBgpJKh2xeqDjcIKgVAJh1Ge2HxEifhCBr7bMKLG/exec",
+          formDetail,
+          {
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8;",
+              Accept: "text/plain;charset=utf-8;",
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+          Toast.fire({
+            icon: "success",
+            title: "บันทึกสำเร็จ",
+            timer: 1500,
+          });
+
+          setFormDetail(initFormDetail);
+        })
+        .catch((err) => console.log(err));
     } else {
       Toast.fire({
         icon: "error",
         title: errMsg,
-        timer: 4000
+        timer: 4000,
       });
     }
   };
 
   const validate = () => {
     if (IsEmpty(formDetail.userId)) {
-      return "ไม่สามารถ init profile ได้"
+      return "ไม่สามารถ init profile ได้";
     }
-    
+
     if (IsEmpty(formDetail.date)) {
-      return "กรุณากรอกวันที่"
+      return "กรุณากรอกวันที่";
     }
 
     if (IsEmpty(formDetail.type)) {
-      return "กรุณากรอกประเภท"
+      return "กรุณากรอกประเภท";
     }
 
-    for(const sd of formDetail.subDetailList) {
+    for (const sd of formDetail.subDetailList) {
       if (IsEmpty(sd.category) && IsEmpty(sd.description)) {
-        return "กรุณากรอกหมวดหมู่ หรือ รายละเอียด"
+        return "กรุณากรอกหมวดหมู่ หรือ รายละเอียด";
       }
 
       if (IsEmpty(sd.amount)) {
-        return "กรุณากรอกจำนวนเงิน"
+        return "กรุณากรอกจำนวนเงิน";
       }
     }
 
-    return ""
-  }
+    return "";
+  };
 
   return (
-    <div className="w-full">
-      <div className="relative z-30">
-        <div className="fixed bottom-20 right-5">
-          <button
-            className="btn btn-accent rounded-full"
-            onClick={addSubDetail}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
-        <div className="fixed bottom-5 right-5">
-          <button className="btn btn-primary rounded-full" onClick={save}>
-            <FontAwesomeIcon icon={faFloppyDisk} />
-          </button>
-        </div>
-      </div>
-
-      <div className="sticky top-0 w-full backdrop-blur z-10">
-        <label className="form-control w-full">
-          <div className="label">
-            <span className="label-text">วันที่</span>
+    <Suspense fallback={<Loading />}>
+      <div className="w-full">
+        <div className="relative z-30">
+          <div className="fixed bottom-20 right-5">
+            <button
+              className="btn btn-accent rounded-full"
+              onClick={addSubDetail}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
           </div>
-          <input
-            type="date"
-            placeholder="วันที่"
-            defaultValue={formDetail.date}
-            onChange={(e) =>
-              setFormDetail({ ...formDetail, date: e.target.value })
-            }
-            className="input input-bordered w-full"
-          />
-        </label>
-        <label className="form-control">
-          <div className="label">
-            <span className="label-text">ประเภท</span>
+          <div className="fixed bottom-5 right-5">
+            <button className="btn btn-primary rounded-full" onClick={save}>
+              <FontAwesomeIcon icon={faFloppyDisk} />
+            </button>
           </div>
-          <select
-            className="select select-bordered"
-            defaultValue={formDetail.type}
-            onChange={(e) =>
-              setFormDetail({ ...formDetail, type: e.target.value })
-            }
-          >
-            {typeList.map((a, i) => (
-              <option key={`type${i}`} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+        </div>
 
-      {formDetail.subDetailList.map((sd, index) => (
-        <div
-          key={`subDetailList${index}`}
-          className="relative overscroll-contain w-full"
-        >
-          <details className="collapse bg-base-200 mt-4" open>
-            <summary className="collapse-title text-xl font-medium pe-4">
-              รายการที่ {index + 1}
-              <button
-                className={`float-end z-20 ${formDetail.subDetailList.length === 1 ? 'hidden' : ''}`}
-                onClick={() => removeSubDetail(index)}
-              ><FontAwesomeIcon icon={faXmark} /></button>
-            </summary>
-            <div className="collapse-content">
-              <label className="form-control">
-                <div className="label">
-                  <span className="label-text">หมวดหมู่</span>
-                </div>
-                <select
-                  className="select select-bordered"
-                  name="category"
-                  value={sd.category}
-                  onChange={(e) => handleSubDetailChange(index, e)}
-                >
-                  {categoryList.map((a, i) => (
-                    <option key={`cat${i}`} value={a.id}>
-                      {a.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="form-control">
-                <div className="label">
-                  <span className="label-text">รายละเอียด</span>
-                </div>
-                <input
-                  type="text"
-                  name="description"
-                  placeholder="รายละเอียด"
-                  value={sd.description}
-                  onChange={(e) => handleSubDetailChange(index, e)}
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control">
-                <div className="label">
-                  <span className="label-text">จำนวนเงิน</span>
-                </div>
-                <input
-                  type="number"
-                  name="amount"
-                  placeholder="จำนวนเงิน"
-                  value={sd.amount}
-                  onChange={(e) => handleSubDetailChange(index, e)}
-                  className="input input-bordered w-full"
-                />
-              </label>
-              <label className="form-control">
-                <div className="label">
-                  <span className="label-text">ช่องทางชำระเงิน</span>
-                </div>
-                <select
-                  className="select select-bordered"
-                  name="channel"
-                  value={sd.channel}
-                  onChange={(e) => handleSubDetailChange(index, e)}
-                >
-                  {channelList.map((a, i) => (
-                    <option key={`ch${i}`} value={a.id}>
-                      {a.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+        <div className="sticky top-0 w-full backdrop-blur z-10">
+          <label className="form-control w-full">
+            <div className="label">
+              <span className="label-text">วันที่</span>
             </div>
-          </details>
+            <input
+              type="date"
+              placeholder="วันที่"
+              defaultValue={formDetail.date}
+              onChange={(e) =>
+                setFormDetail({ ...formDetail, date: e.target.value })
+              }
+              className="input input-bordered w-full"
+            />
+          </label>
+          <label className="form-control">
+            <div className="label">
+              <span className="label-text">ประเภท</span>
+            </div>
+            <select
+              className="select select-bordered"
+              defaultValue={formDetail.type}
+              onChange={(e) =>
+                setFormDetail({ ...formDetail, type: e.target.value })
+              }
+            >
+              {typeList.map((a, i) => (
+                <option key={`type${i}`} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-      ))}
-    </div>
+
+        {formDetail.subDetailList.map((sd, index) => (
+          <div
+            key={`subDetailList${index}`}
+            className="relative overscroll-contain w-full"
+          >
+            <details className="collapse bg-base-200 mt-4" open>
+              <summary className="collapse-title text-xl font-medium pe-4">
+                รายการที่ {index + 1}
+                <button
+                  className={`float-end z-20 ${
+                    formDetail.subDetailList.length === 1 ? "hidden" : ""
+                  }`}
+                  onClick={() => removeSubDetail(index)}
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </button>
+              </summary>
+              <div className="collapse-content">
+                <label className="form-control">
+                  <div className="label">
+                    <span className="label-text">หมวดหมู่</span>
+                  </div>
+                  <select
+                    className="select select-bordered"
+                    name="category"
+                    value={sd.category}
+                    onChange={(e) => handleSubDetailChange(index, e)}
+                  >
+                    {categoryList.map((a, i) => (
+                      <option key={`cat${i}`} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="form-control">
+                  <div className="label">
+                    <span className="label-text">รายละเอียด</span>
+                  </div>
+                  <input
+                    type="text"
+                    name="description"
+                    placeholder="รายละเอียด"
+                    value={sd.description}
+                    onChange={(e) => handleSubDetailChange(index, e)}
+                    className="input input-bordered w-full"
+                  />
+                </label>
+                <label className="form-control">
+                  <div className="label">
+                    <span className="label-text">จำนวนเงิน</span>
+                  </div>
+                  <input
+                    type="number"
+                    name="amount"
+                    placeholder="จำนวนเงิน"
+                    value={sd.amount}
+                    onChange={(e) => handleSubDetailChange(index, e)}
+                    className="input input-bordered w-full"
+                  />
+                </label>
+                <label className="form-control">
+                  <div className="label">
+                    <span className="label-text">ช่องทางชำระเงิน</span>
+                  </div>
+                  <select
+                    className="select select-bordered"
+                    name="channel"
+                    value={sd.channel}
+                    onChange={(e) => handleSubDetailChange(index, e)}
+                  >
+                    {channelList.map((a, i) => (
+                      <option key={`ch${i}`} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </details>
+          </div>
+        ))}
+      </div>
+    </Suspense>
   );
 }
-
