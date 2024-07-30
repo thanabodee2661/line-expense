@@ -16,7 +16,7 @@ function ClientLayout({
 
   useEffect(() => {
     liff
-      .init({ liffId: "2005736477-2eRaENlj" })
+      .init({ liffId: process.env["LIFF_ID"] || '' })
       .then(() => {
         if (!liff.isLoggedIn()) {
           liff.login();
