@@ -15,8 +15,10 @@ function ClientLayout({
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
+    console.log(process.env.NEXT_PUBLIC_LIFF_ID);
+    
     liff
-      .init({ liffId: process.env["LIFF_ID"] || '' })
+      .init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID || '' })
       .then(() => {
         if (!liff.isLoggedIn()) {
           liff.login();
