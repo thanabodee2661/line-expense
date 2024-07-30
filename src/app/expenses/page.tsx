@@ -152,7 +152,7 @@ export default function Expenses() {
     if (IsEmpty(errMsg)) {
       axios
         .post(
-          "https://script.google.com/macros/s/AKfycbwvcrnyUjHtgllggRwT6eIyzvuEmBgpJKh2xeqDjcIKgVAJh1Ge2HxEifhCBr7bMKLG/exec",
+          process.env.NEXT_PUBLIC_EXPENSE_URL || '',
           formDetail,
           {
             headers: {
@@ -184,26 +184,6 @@ export default function Expenses() {
         },
       });
     }
-  };
-
-  const loading = () => {
-    console.log("loading");
-
-    const Toast = MySwal.mixin({
-      toast: true,
-      position: "top",
-      showConfirmButton: false,
-      timerProgressBar: true,
-      allowOutsideClick: false,
-      title: "กำลังดำเนินการ.. กรุณารอสักครู่",
-      didOpen: () => {
-        console.log('show loading');
-        
-        Swal.showLoading();
-      },
-    });
-
-    Toast.fire().then(() => {});
   };
 
   const validate = () => {
