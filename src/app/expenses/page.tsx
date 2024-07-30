@@ -14,8 +14,6 @@ import withReactContent from "sweetalert2-react-content";
 import { IsEmpty } from "@/utils/validation";
 import axios from "axios";
 import ProfileContext from "@/contexts/line";
-import Loading from "../loading";
-import { log } from "console";
 
 const MySwal = withReactContent(Swal);
 
@@ -80,7 +78,7 @@ export default function Expenses() {
   const initFormDetail: ExpenseDetail = {
     userId: profile?.userId || "",
     userName: profile?.displayName || "",
-    date: `${current.getFullYear()}-${("0" + current.getMonth()).slice(-2)}-${(
+    date: `${current.getFullYear()}-${("0" + (current.getMonth() + 1)).slice(-2)}-${(
       "0" + current.getDate()
     ).slice(-2)}`,
     type: `รับ`,
@@ -157,7 +155,7 @@ export default function Expenses() {
           {
             headers: {
               "Content-Type": "text/plain;charset=utf-8;",
-              Accept: "text/plain;charset=utf-8;",
+              "Accept": "text/plain;charset=utf-8;",
             },
           }
         )
@@ -173,7 +171,17 @@ export default function Expenses() {
 
           setFormDetail(initFormDetail);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err)
+          Toast.fire({
+            icon: "error",
+            title: err.message,
+            timer: 4000,
+            didOpen: () => {
+              MySwal.hideLoading();
+            },
+          });
+        });
     } else {
       Toast.fire({
         icon: "error",
@@ -187,9 +195,9 @@ export default function Expenses() {
   };
 
   const validate = () => {
-    if (IsEmpty(formDetail.userId)) {
-      return "ไม่สามารถ init profile ได้";
-    }
+    // if (IsEmpty(formDetail.userId)) {
+    //   return "ไม่สามารถ init profile ได้";
+    // }
 
     if (IsEmpty(formDetail.date)) {
       return "กรุณากรอกวันที่";
