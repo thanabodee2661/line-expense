@@ -1,10 +1,11 @@
 "use client";
 
 import Header from "@/components/header";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import liff, { Liff } from "@line/liff";
 import ProfileContext from "@/contexts/line";
 import { Profile } from "@liff/get-profile";
+import Loading from "./loading";
 
 function ClientLayout({
   children,
@@ -17,7 +18,7 @@ function ClientLayout({
 
   useEffect(() => {
     console.log("use effect");
-    
+
     liff
       .init({ liffId: "2005736477-2eRaENlj" })
       .then(() => {
@@ -27,16 +28,14 @@ function ClientLayout({
         setLiffObject(liff);
 
         console.log("init profile: ", liffObject);
-        
-        liff.getProfile()
-        .then((pf) => {
+
+        liff.getProfile().then((pf) => {
           console.log("get profile:", pf);
-          
+
           setProfile(pf);
         });
 
         console.log("profile: ", profile);
-        
       })
       .catch((error) => {
         console.log(`liff.init() failed: ${error}`);
@@ -46,10 +45,10 @@ function ClientLayout({
 
   return (
     <ProfileContext.Provider value={profile}>
-      <Header></Header>
-      <div className="flex px-6 mb-4">
-        {children}
-      </div>
+      <Suspense fallback={<Loading />}>
+        <Header></Header>
+        <div className="flex px-6 mb-4">{children}</div>
+      </Suspense>
     </ProfileContext.Provider>
   );
 }

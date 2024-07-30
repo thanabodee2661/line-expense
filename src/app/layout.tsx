@@ -5,8 +5,6 @@ import ClientLayout from "./clientLayout";
 import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
-import { Suspense } from "react";
-import Loading from "./loading";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,9 +22,7 @@ function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Suspense fallback={ <Loading /> }>
-          <ClientLayout>{children}</ClientLayout>
-        </Suspense>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
