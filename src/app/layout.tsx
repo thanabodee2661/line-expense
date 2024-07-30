@@ -5,6 +5,8 @@ import ClientLayout from "./clientLayout";
 import "./globals.css";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import { Suspense } from "react";
+import Loading from "./loading";
 config.autoAddCss = false;
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,13 +21,12 @@ function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+        <Suspense fallback={ <Loading /> }>
+          <ClientLayout>{children}</ClientLayout>
+        </Suspense>
       </body>
     </html>
   );

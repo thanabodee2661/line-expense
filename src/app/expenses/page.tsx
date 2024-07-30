@@ -86,8 +86,8 @@ export default function Expenses() {
 
   const current = new Date();
   const initFormDetail: ExpenseDetail = {
-    userId: profile?.userId || 'id',
-    userName: profile?.displayName || 'name',
+    userId: profile?.userId || '',
+    userName: profile?.displayName || '',
     date: `${current.getFullYear()}-${("0" + current.getMonth()).slice(-2)}-${("0" + current.getDate()).slice(-2)}`,
     type: `รับ`,
     subDetailList: [
@@ -168,6 +168,9 @@ export default function Expenses() {
   };
 
   const validate = () => {
+    if (IsEmpty(formDetail.userId)) {
+      return "ไม่สามารถ init profile ได้"
+    }
     
     if (IsEmpty(formDetail.date)) {
       return "กรุณากรอกวันที่"
