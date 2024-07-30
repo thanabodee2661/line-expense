@@ -44,12 +44,12 @@ function ClientLayout({
   }, []);
 
   return (
-    <ProfileContext.Provider value={profile}>
-      <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+      <ProfileContext.Provider value={profile}>
         <Header></Header>
         <div className="flex px-6 mb-4">{children}</div>
-      </Suspense>
-    </ProfileContext.Provider>
+      </ProfileContext.Provider>
+    </Suspense>
   );
 }
 

@@ -1,3 +1,9 @@
 export default function Loading() {
-  return <span className="loading loading-ring loading-lg"></span>
+  console.log("Londing Start");
+
+  return (
+    <div className="m-auto">
+      <span className="loading loading-ring loading-lg"></span>
+    </div>
+  );
 }

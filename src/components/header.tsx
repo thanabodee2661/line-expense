@@ -1,19 +1,10 @@
 "use client";
 
-import { useState, useContext, useEffect } from "react";
-import { Profile } from "@liff/get-profile";
+import { useContext } from "react";
 import ProfileContext from "@/contexts/line";
 
 export default function Header() {
   const profile = useContext(ProfileContext);
-  // const [profile, setProfile] = useState<Profile>();
-
-  // useEffect(() => {
-    // liffObject?.getProfile()
-    // .then((pf) => {
-    //   setProfile(pf);
-    // });
-  // })
 
   return (
     <div className="navbar bg-base-100">
