@@ -28,7 +28,7 @@ function ClientLayout({
 
         console.log("init profile: ", liffObject);
         
-        liffObject?.getProfile()
+        liff.getProfile()
         .then((pf) => {
           console.log("get profile:", pf);
           
