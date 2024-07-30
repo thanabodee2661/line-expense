@@ -26,10 +26,12 @@ function ClientLayout({
         }
         setLiffObject(liff);
 
-        console.log("init profile");
+        console.log("init profile: ", liffObject);
         
         liffObject?.getProfile()
         .then((pf) => {
+          console.log("get profile:", pf);
+          
           setProfile(pf);
         });
 
