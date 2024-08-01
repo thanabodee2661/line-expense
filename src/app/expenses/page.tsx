@@ -246,7 +246,7 @@ export default function Expenses() {
           <input
             type="date"
             placeholder="วันที่"
-            defaultValue={formDetail.date}
+            value={formDetail.date}
             onChange={(e) =>
               setFormDetail({ ...formDetail, date: e.target.value })
             }
@@ -259,7 +259,7 @@ export default function Expenses() {
           </div>
           <select
             className="select select-bordered"
-            defaultValue={formDetail.type}
+            value={formDetail.type}
             onChange={(e) =>
               setFormDetail({ ...formDetail, type: e.target.value })
             }
