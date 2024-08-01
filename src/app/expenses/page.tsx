@@ -91,7 +91,9 @@ export default function Expenses() {
       },
     ],
   };
+  
   const [formDetail, setFormDetail] = useState(initFormDetail);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setFormDetail(initFormDetail);
@@ -148,6 +150,7 @@ export default function Expenses() {
     const errMsg = validate();
 
     if (IsEmpty(errMsg)) {
+      setIsLoading(true)
       axios
         .post(
           process.env.NEXT_PUBLIC_EXPENSE_URL || '',
@@ -181,7 +184,8 @@ export default function Expenses() {
               MySwal.hideLoading();
             },
           });
-        });
+        })
+        .finally(() => setIsLoading(false));
     } else {
       Toast.fire({
         icon: "error",
@@ -222,21 +226,24 @@ export default function Expenses() {
 
   return (
     <div className="w-full">
-      <div className="relative z-30">
-        <div className="fixed bottom-20 right-5">
-          <button
-            className="btn btn-accent rounded-full"
-            onClick={addSubDetail}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </div>
-        <div className="fixed bottom-5 right-5">
-          <button className="btn btn-primary rounded-full" onClick={save}>
-            <FontAwesomeIcon icon={faFloppyDisk} />
-          </button>
-        </div>
-      </div>
+      {
+        isLoading ? "" : 
+          <div className="relative z-30">
+            <div className="fixed bottom-20 right-5">
+              <button
+                className="btn btn-accent rounded-full"
+                onClick={addSubDetail}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            <div className="fixed bottom-5 right-5">
+              <button className="btn btn-primary rounded-full" onClick={save}>
+                <FontAwesomeIcon icon={faFloppyDisk} />
+              </button>
+            </div>
+          </div>
+      }
 
       <div className="sticky top-0 w-full backdrop-blur z-10">
         <label className="form-control w-full">
