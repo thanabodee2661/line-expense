@@ -18,7 +18,7 @@ export default function MonthsReports() {
   const labels = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug"];
 
   // Data want to show on chart
-  const datasets = [12, 45, 67, 43, 89, 34, 67, 43];
+  const datasets = [[1,2,3],[4,5,6]];
 
   const data = {
     labels: labels,

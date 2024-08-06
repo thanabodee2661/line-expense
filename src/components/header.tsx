@@ -2,6 +2,7 @@
 
 import { useContext } from "react";
 import ProfileContext from "@/contexts/line";
+import Link from "next/link";
 
 export default function Header() {
   const profile = useContext(ProfileContext);
@@ -9,7 +10,7 @@ export default function Header() {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">LINE</a>
+        <Link className="btn btn-ghost text-xl" href="/reports">LINE</Link>
       </div>
       <div className="flex-none">
         <div className="dropdown dropdown-end pe-3">

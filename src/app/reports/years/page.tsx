@@ -25,14 +25,15 @@ export default function YearsReports() {
   };
   const [formSearch, setFormSearch] = useState(form);
   const [dataGraph, setDataGraph] = useState<DoughnutInterface | null>(null);
-  const [total, setTotal] = useState<string>()
+  const [total, setTotal] = useState<string>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChangeYear = (value: number) => {
-    console.log(value);
     setFormSearch({ ...formSearch, year: value });
   };
 
   const search = () => {
+    setIsLoading(true);
     axios
       .get(process.env.NEXT_PUBLIC_EXPENSE_URL || "", {
         params: {
@@ -45,12 +46,12 @@ export default function YearsReports() {
         },
       })
       .then((resp) => {
-        console.log(resp.data);
         summarizePerMonth(resp.data);
       })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const summarizePerMonth = (datas: Object) => {
@@ -58,14 +59,34 @@ export default function YearsReports() {
       const monthStr = k.split("/")[1];
       const monthFull = MonthUtil[monthStr as keyof typeof MonthUtil]?.full;
       const monthColor = MonthUtil[monthStr as keyof typeof MonthUtil]?.color;
-      const summary = v.reduce((acc: number, cv: any) => (acc += cv[3]), 0);
-      return {month: monthFull, value: summary, color: monthColor}
+      const summaryIncome = v.reduce((acc: number, cv: any) => {
+        if (cv[1] == "รับ") {
+          acc += cv[3];
+        }
+        return acc;
+      }, 0);
+      const summaryExpense = v.reduce((acc: number, cv: any) => {
+        if (cv[1] == "จ่าย") {
+          acc += cv[3];
+        }
+        return acc;
+      }, 0);
+      const remaining = summaryIncome - summaryExpense;
+      return {
+        month: monthFull,
+        income: summaryIncome,
+        expense: summaryExpense,
+        remaining: remaining,
+        color: monthColor,
+      };
     });
 
-    const labels = tempReports.map(v => v.month)
-    const datasets = tempReports.map(v => v.value)
-    const colors = tempReports.map(v => v.color)
-    const total = tempReports.reduce((acc, v) => acc += v.value, 0)
+    console.log(tempReports);
+
+    const labels = tempReports.map((v) => v.month);
+    const datasets = tempReports.map((v) => v.remaining.toFixed(2));
+    const colors = tempReports.map((v) => v.color);
+    const total = tempReports.reduce((acc, v) => (acc += v.remaining), 0);
 
     const data: DoughnutInterface = {
       labels: labels,
@@ -73,15 +94,13 @@ export default function YearsReports() {
         {
           label: "",
           data: datasets,
-          backgroundColor: colors
+          backgroundColor: colors,
         },
-      ]
+      ],
     };
 
-    console.log(data);
-    
-    setDataGraph(data)
-    setTotal(formatter.format(total))
+    setDataGraph(data);
+    setTotal(formatter.format(total));
   };
 
   return (
@@ -96,14 +115,30 @@ export default function YearsReports() {
         </button>
       </div>
 
-      {!dataGraph ? (
-        ""
-      ) : (
-        <div className="relative flex w-full m-auto justify-center">
-          <Doughnut data={dataGraph} />
-          <div className="absolute text-center" style={{width: '117px', top: '195px'}}>{total}</div>
-        </div>
-      )}
+      {
+        isLoading ? (
+          <div className="flex justify-center mt-5">
+            <span className="loading loading-ring loading-lg"></span>
+            <span className="loading loading-ring loading-lg"></span>
+            <span className="loading loading-ring loading-lg"></span>
+            <span className="loading loading-ring loading-lg"></span>
+          </div>
+        ) : (
+          !dataGraph ? (
+              ""
+            ) : (
+              <div className="relative flex w-full m-auto justify-center">
+                <Doughnut data={dataGraph} />
+                <div
+                  className="absolute text-center"
+                  style={{ width: "117px", top: "195px" }}
+                >
+                  {total}
+                </div>
+              </div>
+            )
+        )
+      }
     </div>
   );
 }
