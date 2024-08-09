@@ -46,7 +46,7 @@ export default function YearsReports() {
         },
       })
       .then((resp) => {
-        summarizePerMonth(resp.data);
+        summarize(resp.data);
       })
       .catch((err) => {
         console.log(err);
@@ -54,11 +54,8 @@ export default function YearsReports() {
       .finally(() => setIsLoading(false));
   };
 
-  const summarizePerMonth = (datas: Object) => {
+  const summarize = (datas: Object) => {
     const tempReports = Object.entries(datas).map(([k, v]) => {
-      const monthStr = k.split("/")[1];
-      const monthFull = MonthUtil[monthStr as keyof typeof MonthUtil]?.full;
-      const monthColor = MonthUtil[monthStr as keyof typeof MonthUtil]?.color;
       const summaryIncome = v.reduce((acc: number, cv: any) => {
         if (cv[1] == "รับ") {
           acc += cv[3];
@@ -73,20 +70,23 @@ export default function YearsReports() {
       }, 0);
       const remaining = summaryIncome - summaryExpense;
       return {
-        month: monthFull,
         income: summaryIncome,
         expense: summaryExpense,
         remaining: remaining,
-        color: monthColor,
       };
     });
 
-    console.log(tempReports);
-
-    const labels = tempReports.map((v) => v.month);
-    const datasets = tempReports.map((v) => v.remaining.toFixed(2));
-    const colors = tempReports.map((v) => v.color);
+    const labels = ["รับ", "จ่าย", "เหลือ"];
+    const income = tempReports.reduce((acc, v) => (acc += v.income), 0);
+    const expense = tempReports.reduce((acc, v) => (acc += v.expense), 0);
+    const remaining = tempReports.reduce((acc, v) => (acc += v.remaining), 0);
+    const datasets = [
+      income.toFixed(2),
+      expense.toFixed(2),
+      remaining.toFixed(2),
+    ];
     const total = tempReports.reduce((acc, v) => (acc += v.remaining), 0);
+    const backgroundColor = ["#00c200", "#f41c11", "#ecf00c"];
 
     const data: DoughnutInterface = {
       labels: labels,
@@ -94,7 +94,7 @@ export default function YearsReports() {
         {
           label: "",
           data: datasets,
-          backgroundColor: colors,
+          backgroundColor: backgroundColor,
         },
       ],
     };
@@ -110,35 +110,35 @@ export default function YearsReports() {
           deafultValue={formSearch.year}
           handleChange={handleChangeYear}
         ></SelectYear>
-        <button className="btn btn-primary mt-4" onClick={search}>
-          ค้นหา
-        </button>
+        {!isLoading ? (
+          <button className="btn btn-primary mt-4" onClick={search}>
+            ค้นหา
+          </button>
+        ) : (
+          ""
+        )}
       </div>
 
-      {
-        isLoading ? (
-          <div className="flex justify-center mt-5">
-            <span className="loading loading-ring loading-lg"></span>
-            <span className="loading loading-ring loading-lg"></span>
-            <span className="loading loading-ring loading-lg"></span>
-            <span className="loading loading-ring loading-lg"></span>
+      {isLoading ? (
+        <div className="flex justify-center mt-5">
+          <span className="loading loading-ring loading-lg"></span>
+          <span className="loading loading-ring loading-lg"></span>
+          <span className="loading loading-ring loading-lg"></span>
+          <span className="loading loading-ring loading-lg"></span>
+        </div>
+      ) : !dataGraph ? (
+        ""
+      ) : (
+        <div className="relative flex w-full m-auto justify-center">
+          <Doughnut data={dataGraph} />
+          <div
+            className="absolute text-center"
+            style={{ width: "117px", top: "175px" }}
+          >
+            {total}
           </div>
-        ) : (
-          !dataGraph ? (
-              ""
-            ) : (
-              <div className="relative flex w-full m-auto justify-center">
-                <Doughnut data={dataGraph} />
-                <div
-                  className="absolute text-center"
-                  style={{ width: "117px", top: "195px" }}
-                >
-                  {total}
-                </div>
-              </div>
-            )
-        )
-      }
+        </div>
+      )}
     </div>
   );
 }

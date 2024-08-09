@@ -4,8 +4,15 @@ export interface DoughnutInterface {
     {
       label: string;
       data: string[];
-      backgroundColor: string[]
+      backgroundColor?: string[]
     }
   ];
   options?: any;
+}
+
+export interface DetailReport {
+  date: string;
+  type: string;
+  desc: string;
+  amount: string;
 }
