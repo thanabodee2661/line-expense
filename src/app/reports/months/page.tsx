@@ -176,7 +176,7 @@ export default function MonthsReports() {
               aria-label="รายละเอียด"
             />
             <div role="tabpanel" className="tab-content pt-4">
-              <div className="overflow-x-auto h-96">
+              <div className="overflow-x-auto" style={{ height: '350px'}}>
                 <table className="table table-xs table-pin-rows ">
                   <thead>
                     <tr>
