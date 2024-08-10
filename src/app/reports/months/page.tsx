@@ -26,7 +26,13 @@ export default function MonthsReports() {
   };
   const [formSearch, setFormSearch] = useState(form);
   const [dataGraph, setDataGraph] = useState<DoughnutInterface | null>(null);
+  const [dataGraphGroupIncome, setDataGraphGroupIncome] =
+    useState<DoughnutInterface | null>(null);
+  const [dataGraphGroupExpense, setDataGraphGroupExpense] =
+    useState<DoughnutInterface | null>(null);
   const [total, setTotal] = useState<string>();
+  const [totalGroupIncome, setTotalGroupIncome] = useState<string>();
+  const [totalGroupExpense, setTotalGroupExpense] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [detailList, setDetailList] = useState<DetailReport[] | null>(null);
 
@@ -53,6 +59,7 @@ export default function MonthsReports() {
       })
       .then((resp) => {
         summarize(resp.data);
+        summarizeGroup(resp.data);
         detail(resp.data);
       })
       .catch((err) => {
@@ -110,14 +117,66 @@ export default function MonthsReports() {
     setTotal(formatter.format(total));
   };
 
-  const detail = (datas: Object) => {
-    const tempReports = Object.entries(datas).map(([k, v]) => {
-      return v
-    }).flatMap(des => {
-      return des.map((v: any[]) => {
-        return { date: v[5], type: v[1], desc: v[2], amount: formatter.format(v[3]) };
-      });
+  const summarizeGroup = (datas: Object) => {
+    const tempReports = Object.entries(datas).flatMap(([k, v]) => {
+      return v;
     });
+
+    const incomeList = tempReports.filter((v) => v[1] === "รับ");
+    const expenseList = tempReports.filter((v) => v[1] === "จ่าย");
+
+    setDataGraphGroupIncome(summarizeDataGroup("รายรับ", incomeList));
+    setDataGraphGroupExpense(summarizeDataGroup("รายจ่าย", expenseList));
+    setTotalGroupIncome(incomeList.reduce((acc, v) => (acc += v[3]), 0));
+    setTotalGroupExpense(expenseList.reduce((acc, v) => (acc += v[3]), 0));
+  };
+
+  const summarizeDataGroup = (
+    title: string,
+    datas: any[]
+  ): DoughnutInterface => {
+    const groupIncome = datas.reduce((acc, v) => {
+      const key = (v[6] as string) || "ทั่วไป";
+      if (v[6] in acc) {
+        acc[key] += v[3] as number;
+      } else {
+        acc[key] = v[3] as number;
+      }
+
+      return acc;
+    }, {});
+
+    const labels = Object.keys(groupIncome);
+    const datasets = Object.values(groupIncome).map((v: any) => v.toFixed(2));
+    return {
+      labels: labels,
+      datasets: [
+        {
+          label: title,
+          data: datasets,
+        },
+      ],
+      options: {
+        responsive: true,
+      },
+    };
+  };
+
+  const detail = (datas: Object) => {
+    const tempReports = Object.entries(datas)
+      .map(([k, v]) => {
+        return v;
+      })
+      .flatMap((des) => {
+        return des.map((v: any[]) => {
+          return {
+            date: v[5],
+            type: v[1],
+            desc: v[2],
+            amount: formatter.format(v[3]),
+          };
+        });
+      });
     setDetailList(tempReports);
   };
 
@@ -149,7 +208,7 @@ export default function MonthsReports() {
         ""
       ) : (
         <div className="relative w-full m-auto justify-center">
-          <div role="tablist" className="tabs grid-cols-2 tabs-bordered">
+          <div role="tablist" className="tabs grid-cols-3 tabs-bordered">
             <input
               type="radio"
               name="my_tabs_1"
@@ -162,9 +221,65 @@ export default function MonthsReports() {
               <Doughnut data={dataGraph} />
               <div
                 className="absolute text-center"
-                style={{ width: '117px', top: '220px', left: '33%' }}
+                style={{ width: "117px", top: "220px", left: "33%" }}
               >
                 {total}
+              </div>
+            </div>
+
+            <input
+              type="radio"
+              name="my_tabs_1"
+              role="tab"
+              className="tab"
+              aria-label="สรุปตามกลุ่ม"
+            />
+            <div role="tabpanel" className="tab-content pt-4">
+              <div role="tablist" className="tabs grid-cols-2 tabs-boxed">
+                <input
+                  type="radio"
+                  name="my_tabs_2"
+                  role="tab"
+                  className="tab"
+                  aria-label="รายรับ"
+                />
+                {dataGraphGroupIncome ? (
+                  <div role="tabpanel" className="tab-content pt-4">
+                    <Doughnut
+                      data={dataGraphGroupIncome}
+                      style={{ width: "30px", height: "30px" }}
+                    />
+                    <div
+                      className="absolute text-center"
+                      style={{ width: "117px", top: "63%", left: "33%" }}
+                    >
+                      {totalGroupIncome}
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
+
+                <input
+                  type="radio"
+                  name="my_tabs_2"
+                  role="tab"
+                  className="tab"
+                  aria-label="รายจ่าย"
+                />
+                {dataGraphGroupExpense ? (
+                  <div role="tabpanel" className="tab-content pt-4">
+                    <Doughnut data={dataGraphGroupExpense} />
+                    <div
+                      className="absolute text-center"
+                      style={{ width: "117px", top: "63%", left: "33%" }}
+                    >
+                      {totalGroupExpense}
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
 
@@ -176,7 +291,7 @@ export default function MonthsReports() {
               aria-label="รายละเอียด"
             />
             <div role="tabpanel" className="tab-content pt-4">
-              <div className="overflow-x-auto" style={{ height: '350px'}}>
+              <div className="overflow-x-auto" style={{ height: "350px" }}>
                 <table className="table table-xs table-pin-rows ">
                   <thead>
                     <tr>
