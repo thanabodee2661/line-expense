@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ExpenseDetail, ExpenseType } from "@/models/expense";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -18,6 +19,8 @@ import ProfileContext from "@/contexts/line";
 const MySwal = withReactContent(Swal);
 
 export default function Expenses() {
+  const searchParams = useSearchParams(); // Use useSearchParams to access query parameters
+  const chatId = searchParams.get("chatId"); // Get the chatId query parameter
   const profile = useContext(ProfileContext);
   const typeList: ExpenseType[] = [
     {
@@ -90,6 +93,7 @@ export default function Expenses() {
         channel: ``,
       },
     ],
+    chatId: chatId || "",
   };
   
   const [formDetail, setFormDetail] = useState(initFormDetail);

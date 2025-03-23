@@ -9,6 +9,7 @@ export interface ExpenseDetail {
   date: string;
   type: string;
   subDetailList: ExpenseSubDetail[];
+  chatId: string;
 }
 
 export interface ExpenseSubDetail {
