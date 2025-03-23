@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ExpenseDetail, ExpenseType } from "@/models/expense";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -19,8 +19,8 @@ import ProfileContext from "@/contexts/line";
 const MySwal = withReactContent(Swal);
 
 export default function Expenses() {
-  const searchParams = useSearchParams(); // Use useSearchParams to access query parameters
-  const chatId = searchParams.get("chatId"); // Get the chatId query parameter
+  const { chatId } = useParams(); // Get the chatId query parameter
+  const resolvedChatId = Array.isArray(chatId) ? chatId[0] : chatId || "";
   const profile = useContext(ProfileContext);
   const typeList: ExpenseType[] = [
     {
@@ -93,7 +93,7 @@ export default function Expenses() {
         channel: ``,
       },
     ],
-    chatId: chatId || "",
+    chatId: resolvedChatId,
   };
   
   const [formDetail, setFormDetail] = useState(initFormDetail);
@@ -101,7 +101,7 @@ export default function Expenses() {
 
   useEffect(() => {
     setFormDetail(initFormDetail);
-  }, [profile]);
+  }, [profile, resolvedChatId]);
 
   const handleSubDetailChange = (
     index: number,
@@ -153,7 +153,7 @@ export default function Expenses() {
 
     const errMsg = validate();
 
-    if (IsEmpty(errMsg)) {
+    if (IsEmpty(errMsg)) {  
       setIsLoading(true)
       axios
         .post(
